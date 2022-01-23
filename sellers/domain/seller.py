@@ -3,16 +3,8 @@ from sellers.domain.error import Error
 
 class Seller:
 
-  def __init__(self, id, name, email):
-    self.id = id
-    self.name = name
-    self.email = email
-  
-  def __init__(self, id, name, email, password):
-    self.id = id
-    self.name = name
-    self.email = email
-    self.password = password
+  def __init__(self, _dict):
+    self.__dict__.update(_dict)
 
   def setPassword(self, password):
     if(password == ''):
