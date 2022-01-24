@@ -41,7 +41,21 @@ Resources:
           Properties:
             Path: /clients
             Method: post
-
+  
+  CreateProductFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ 
+      Handler: products/interface/products_handler.createProductHandler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+      Events:
+        RegisterClient:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /products
+            Method: post
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
