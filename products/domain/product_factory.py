@@ -1,4 +1,3 @@
-from unicodedata import category
 from products.domain.product import Product
 
 def create(id, name, price, category):
