@@ -29,6 +29,6 @@ def findByEmail(email):
 
 def modelToSeller(model):
   SK = model.SK.split('#')
-  return reconstitute(id=SK[0], name=model.name, email=SK[1], password=model.password)
+  return reconstitute(id=SK[0], name=model.name, email=SK[1])
   
 

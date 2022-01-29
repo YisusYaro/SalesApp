@@ -9,5 +9,5 @@ def modelsToSellers(models):
   sellers = []
   for model in models:
     SK = model.SK.split('#')
-    sellers.append(reconstitute(id=SK[1], name=model.name, email=SK[0], password=model.password))
+    sellers.append(reconstitute(id=SK[1], name=model.name, email=SK[0]))
   return sellers
