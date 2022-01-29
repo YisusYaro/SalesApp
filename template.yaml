@@ -8,7 +8,27 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 60
+    Timeout: 30
+    Environment:
+      Variables:
+        TABLE: !Ref Table
+        COGNITO_ID: !Ref Cognito_Id
+        REGION: !Ref Region
+        AWSENV: !Ref AWSEn
+
+Parameters:
+  Table:
+    Type: String
+    Default: SalesApp
+  Cognito_Id:
+    Type: String
+    Default: 
+  Region:
+    Type: String
+    Default: us-east-1
+  AWSEnv:
+    Type: String
+    Default: AWS
 
 Resources:
 
@@ -18,6 +38,9 @@ Resources:
       CodeUri: ./ 
       Handler: sellers/interface/sellers_handler.registerSellerHandler
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
       Architectures:
         - x86_64
       Events:
@@ -33,6 +56,9 @@ Resources:
       CodeUri: ./ 
       Handler: sellers/interface/sellers_handler.listSellersHandler
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
       Architectures:
         - x86_64
       Events:
@@ -46,8 +72,11 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
-      Handler: clients/interface/clients_handler.registerClientHandler
+      Handler: clients/interface/clients_controller.registerClient
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
       Architectures:
         - x86_64
       Events:
@@ -63,6 +92,9 @@ Resources:
       CodeUri: ./ 
       Handler: products/interface/products_handler.createProductHandler
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
       Architectures:
         - x86_64
       Events:
@@ -78,6 +110,9 @@ Resources:
       CodeUri: ./ 
       Handler: products/interface/products_handler.listProductsHandler
       Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
       Architectures:
         - x86_64
       Events:
@@ -87,17 +122,32 @@ Resources:
             Path: /products
             Method: get
 
+  SalesAppTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "PK"
+          AttributeType: "S"
+        -
+          AttributeName: "SK"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "PK"
+          KeyType: "HASH"
+        -
+          AttributeName: "SK"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      TableName: "SalesApp"
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  SalesAppApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
