@@ -1,0 +1,19 @@
+{
+  "serverlessConsole.services": [
+    {
+      "type": "cloudformation",
+      "title": "SamApp",
+      "timeOffsetInMs": 0,
+      "awsProfile": "default",
+      "stacks": [
+        {
+          "region": "us-east-1",
+          "stackName": "SalesAppStack",
+          "stage": "dev"
+        }
+      ]
+    }
+  ],
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true
+}
