@@ -40,7 +40,8 @@ class RegisterClientHandler(object, metaclass=Singleton):
             _id=self.clientRepository.get_id(), name=name, email=email,
         )
 
-        self.tokenService.signUp(email=client.email, password=password)
+        self.tokenService.sign_up(email=client.email, password=password)
+        self.tokenService.add_to_group(email=client.email, group='clients')
 
         self.clientRepository.save(client)
 
