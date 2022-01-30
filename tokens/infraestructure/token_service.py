@@ -6,6 +6,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 from shared.infraestructure.data_structures.singleton import Singleton
+from tokens.infraestructure.unauthorized_exception import UnauthorizedException
 
 
 class TokenService(object, metaclass=Singleton):
@@ -35,7 +36,7 @@ class TokenService(object, metaclass=Singleton):
                 ClientId=self.client_id,
                 Username=email,
                 Password=password,
-                )
+            )
         except ClientError:
             return
 
@@ -51,3 +52,30 @@ class TokenService(object, metaclass=Singleton):
             Username=email,
             GroupName=group,
         )
+
+    def auth(self, email, password):
+        """Authenticate using the Web API .
+
+        Args:
+            email ([type]): [description]
+            password ([type]): [description]
+
+        Raises:
+            UnauthorizedException: [description]
+
+        Returns:
+            [type]: [description]
+        """
+        try:
+            auth = self.client.initiate_auth(
+                ClientId=self.client_id,
+                AuthFlow='USER_PASSWORD_AUTH',
+                AuthParameters={
+                    'USERNAME': email,
+                    'PASSWORD': password,
+                },
+            )
+        except self.client.exceptions.NotAuthorizedException:
+            raise UnauthorizedException()
+
+        return auth.get('AuthenticationResult')
