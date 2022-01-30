@@ -5,6 +5,7 @@ from ulid import ULID
 from products.domain.product_factory import ProductFactory
 from products.infraestructure.models.product_model import ProductModel
 from shared.infraestructure.data_structures.singleton import Singleton
+from pynamodb.exceptions import DoesNotExist
 
 
 class ProductRepository(object, metaclass=Singleton):
@@ -44,6 +45,22 @@ class ProductRepository(object, metaclass=Singleton):
             )
         model.save()
 
+    def find_by_id(self, _id):
+        """Find a product by its ID .
+
+        Args:
+            _id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        model = None
+        try:
+            model = ProductModel.get(hash_key='products', range_key=_id)
+        except DoesNotExist:
+            return False
+        return self.model_to_product(model)
+
     def model_to_product(self, model):
         """Convert a model to a product .
 
@@ -54,7 +71,7 @@ class ProductRepository(object, metaclass=Singleton):
             [type]: [description]
         """
         return self.productFactory.reconstitute(
-            _id=model.id,
+            _id=model.sk,
             name=model.name,
             price=model.price,
             category=model.category,

@@ -15,3 +15,11 @@ class Product(object):
             _dict ([type]): [description]
         """
         self.__dict__.update(_dict)
+
+    def updateProperties(self, _dict):
+        """Update this object s properties from the dictionary .
+
+        Args:
+            _dict ([type]): [description]
+        """
+        self.__dict__.update(_dict)
