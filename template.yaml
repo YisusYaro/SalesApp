@@ -12,23 +12,19 @@ Globals:
     Environment:
       Variables:
         TABLE: !Ref Table
-        COGNITO_ID: !Ref Cognito_Id
+        COGNITO: !Ref Cognito
         REGION: !Ref Region
-        AWSENV: !Ref AWSEn
 
 Parameters:
   Table:
     Type: String
     Default: SalesApp
-  Cognito_Id:
+  Cognito:
     Type: String
     Default: 
   Region:
     Type: String
     Default: us-east-1
-  AWSEnv:
-    Type: String
-    Default: AWS
 
 Resources:
 
@@ -72,7 +68,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
-      Handler: clients/interface/clients_controller.registerClient
+      Handler: clients/interface/clients_controller.register_client
       Runtime: python3.8
       Policies:
         - DynamoDBCrudPolicy:
@@ -127,21 +123,21 @@ Resources:
     Properties:
       AttributeDefinitions:
         -
-          AttributeName: "PK"
+          AttributeName: "pk"
           AttributeType: "S"
         -
-          AttributeName: "SK"
+          AttributeName: "sk"
           AttributeType: "S"
       KeySchema:
         -
-          AttributeName: "PK"
+          AttributeName: "pk"
           KeyType: "HASH"
         -
-          AttributeName: "SK"
+          AttributeName: "sk"
           KeyType: "RANGE"
       ProvisionedThroughput:
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
       TableName: "SalesApp"
 
 Outputs:
