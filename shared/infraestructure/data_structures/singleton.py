@@ -1,14 +1,26 @@
-import threading
+"""Create a Singleton class ."""
 
-lock = threading.Lock()
 
 class Singleton(type):
-  _instances = {}
+    """Create a Singleton class .
 
-  def __call__(cls, *args, **kwargs):
-    if cls not in cls._instances:
-      with lock:
+    Args:
+        type ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        """Call the method if it is not already instantiated .
+
+        Returns:
+            [type]: [description]
+        """
         if cls not in cls._instances:
-          cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-    return cls._instances[cls]
- 
+            cls._instances[cls] = super(
+                Singleton, cls,
+                ).__call__(*args, **kwargs)
+        return cls._instances[cls]
