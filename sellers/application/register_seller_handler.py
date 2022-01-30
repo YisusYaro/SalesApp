@@ -4,6 +4,7 @@ from sellers.domain.seller_factory import SellerFactory
 from sellers.infraestructure.repositories.seller_repository import \
     SellerRepository
 from shared.infraestructure.data_structures.singleton import Singleton
+from tokens.infraestructure.token_service import TokenService
 
 
 class RegisterSellerHandler(object, metaclass=Singleton):
@@ -18,6 +19,7 @@ class RegisterSellerHandler(object, metaclass=Singleton):
         """Initialize the handler ."""
         self.sellerRepository = SellerRepository()
         self.sellerFactory = SellerFactory()
+        self.tokenService = TokenService()
 
     def execute(self, name, email, password):
         """Register a seller in the database .
@@ -38,6 +40,9 @@ class RegisterSellerHandler(object, metaclass=Singleton):
         seller = self.sellerFactory.create(
             _id=self.sellerRepository.get_id(), name=name, email=email,
             )
+        
+        self.tokenService.sign_up(email=seller.email, password=password)
+        self.tokenService.add_to_group(email=seller.email, group='sellers')
 
         self.sellerRepository.save(seller)
 
