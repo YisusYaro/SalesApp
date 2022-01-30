@@ -21,7 +21,7 @@ Parameters:
     Default: SalesApp
   Cognito:
     Type: String
-    Default: 
+    Default: 1g1qqa4ci8c19bc70rsfvnl8g
   Region:
     Type: String
     Default: us-east-1
@@ -32,7 +32,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
-      Handler: sellers/interface/sellers_handler.registerSellerHandler
+      Handler: sellers/interface/sellers_controller.register_seller
       Runtime: python3.8
       Policies:
         - DynamoDBCrudPolicy:
@@ -50,7 +50,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
-      Handler: sellers/interface/sellers_handler.listSellersHandler
+      Handler: sellers/interface/sellers_controller.list_sellers
       Runtime: python3.8
       Policies:
         - DynamoDBCrudPolicy:
