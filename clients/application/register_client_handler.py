@@ -1,30 +1,47 @@
-from shared.infraestructure.data_structures.singleton import Singleton
-from clients.infraestructure.repositories.client_repository import ClientRepository
+"""Script RegisterClientHandler Class ."""
+
 from clients.domain.client_factory import ClientFactory
+from clients.infraestructure.repositories.client_repository import \
+    ClientRepository
+from shared.infraestructure.data_structures.singleton import Singleton
 from tokens.infraestructure.token_service import TokenService
 
-class RegisterClientHandler(metaclass=Singleton):
-    
-  def __init__(self):
-    self.clientFactory = ClientFactory()
-    self.tokenService = TokenService()
-    self.clientRepository = ClientRepository()
 
-  def execute(self, name, email, password):
+class RegisterClientHandler(object, metaclass=Singleton):
+    """Class for RegisterClientHandler use case .
 
-    client = self.clientRepository.findByEmail(email)
+    Args:
+        metaclass ([type], optional): [description]. Defaults to Singleton.
+    """
 
-    if(client):
-      return {
-        'statusCode': 200,
-      } 
+    def __init__(self):
+        """Initialize the object for the service ."""
+        self.clientFactory = ClientFactory()
+        self.tokenService = TokenService()
+        self.clientRepository = ClientRepository()
 
-    client = self.clientFactory.create(id=self.clientRepository.getId(), name=name, email=email)
-    
-    self.tokenService.signUp(email=client.email, password=password)
+    def execute(self, name, email, password):
+        """Register a new client .
 
-    self.clientRepository.save(client)
+        Args:
+            name ([type]): [description]
+            email ([type]): [description]
+            password ([type]): [description]
 
-    return {
-      'statusCode': 200,
-    }
+        Returns:
+            [type]: [description]
+        """
+        client = self.clientRepository.find_by_email(email)
+
+        if (client):
+            return {'statusCode': 200}
+
+        client = self.clientFactory.create(
+            _id=self.clientRepository.get_id(), name=name, email=email,
+        )
+
+        self.tokenService.signUp(email=client.email, password=password)
+
+        self.clientRepository.save(client)
+
+        return {'statusCode': 200}
