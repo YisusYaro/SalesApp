@@ -34,7 +34,7 @@ class RegisterClientHandler(object, metaclass=Singleton):
         client = self.clientRepository.find_by_email(email)
 
         if (client):
-            return {'statusCode': 200}
+            return
 
         client = self.clientFactory.create(
             _id=self.clientRepository.get_id(), name=name, email=email,
