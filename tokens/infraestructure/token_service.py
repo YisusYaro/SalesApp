@@ -3,8 +3,8 @@
 import os
 
 import boto3
-from botocore.exceptions import ClientError
 
+from shared.exceptions.bad_request import BadRequestException
 from shared.infraestructure.data_structures.singleton import Singleton
 from tokens.infraestructure.unauthorized_exception import UnauthorizedException
 
@@ -25,11 +25,14 @@ class TokenService(object, metaclass=Singleton):
         self.client_id = os.environ.get('COGNITO')
 
     def sign_up(self, email, password):
-        """Signup for the user .
+        """Signs up a user with the given email address .
 
         Args:
             email ([type]): [description]
             password ([type]): [description]
+
+        Raises:
+            BadRequestException: [description]
         """
         try:
             self.client.sign_up(
@@ -37,8 +40,11 @@ class TokenService(object, metaclass=Singleton):
                 Username=email,
                 Password=password,
             )
-        except ClientError:
-            return
+        except (
+            self.client.exceptions.InvalidPasswordException,
+            self.client.exceptions.InvalidParameterException,
+        ):
+            raise BadRequestException()
 
     def add_to_group(self, email, group):
         """Add a user to a group .
