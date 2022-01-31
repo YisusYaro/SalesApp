@@ -26,9 +26,6 @@ class CreateProductHandler(object, metaclass=Singleton):
             name ([type]): [description]
             price ([type]): [description]
             category ([type]): [description]
-
-        Returns:
-            [type]: [description]
         """
         product = self.productFactory.create(
             _id=self.productRepository.get_id(),
@@ -38,7 +35,3 @@ class CreateProductHandler(object, metaclass=Singleton):
             )
 
         self.productRepository.save(product)
-
-        return {
-            'statusCode': 200,
-        }

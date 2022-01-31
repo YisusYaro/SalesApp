@@ -5,6 +5,10 @@ import json
 from products.application.create_product_handler import CreateProductHandler
 from products.application.list_products_handler import ListProductsHandler
 from products.application.update_product_handler import UpdateProductHandler
+from shared.exceptions.bad_request import BadRequestException
+from shared.interface.bad_request_response import BadRequestResponse
+from shared.interface.items_response import ItemsResponse
+from shared.interface.void_response import VoidResponse
 
 
 def create_product(event, context):
@@ -18,9 +22,10 @@ def create_product(event, context):
         [type]: [description]
     """
     body = json.loads(event['body'])
-    return CreateProductHandler().execute(
+    CreateProductHandler().execute(
         name=body['name'], price=body['price'], category=body['category'],
     )
+    return VoidResponse.respond()
 
 
 def list_products(event, context):
@@ -33,7 +38,9 @@ def list_products(event, context):
     Returns:
         [type]: [description]
     """
-    return ListProductsHandler().execute()
+    return ItemsResponse.respond(
+        ListProductsHandler().execute(),
+    )
 
 
 def update_product(event, context):
@@ -48,9 +55,14 @@ def update_product(event, context):
     """
     object_id = event['pathParameters']['id']
     body = json.loads(event['body'])
-    return UpdateProductHandler().execute(
-        _id=object_id,
-        name=body['name'],
-        price=body['price'],
-        category=body['category'],
-        )
+    try:
+        UpdateProductHandler().execute(
+            _id=object_id,
+            name=body['name'],
+            price=body['price'],
+            category=body['category'],
+            )
+    except BadRequestException:
+        return BadRequestResponse.respond()
+
+    return VoidResponse.respond()

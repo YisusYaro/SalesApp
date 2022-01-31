@@ -3,6 +3,7 @@
 from products.domain.product_factory import ProductFactory
 from products.infraestructure.repositories.product_repository import \
     ProductRepository
+from shared.exceptions.bad_request import BadRequestException
 from shared.infraestructure.data_structures.singleton import Singleton
 
 
@@ -28,13 +29,13 @@ class UpdateProductHandler(object, metaclass=Singleton):
             price ([type]): [description]
             category ([type]): [description]
 
-        Returns:
-            [type]: [description]
+        Raises:
+            BadRequestException: [description]
         """
         product = self.productRepository.find_by_id(_id)
 
         if (not product):
-            return {'statusCode': 400}
+            raise BadRequestException()
 
         product.updateProperties({
             'name': name,
@@ -43,5 +44,3 @@ class UpdateProductHandler(object, metaclass=Singleton):
         })
 
         self.productRepository.save(product)
-
-        return {'statusCode': 200}
