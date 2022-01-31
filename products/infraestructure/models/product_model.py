@@ -27,3 +27,4 @@ class ProductModel(Model):
     name = UnicodeAttribute()
     price = NumberAttribute()
     category = UnicodeAttribute()
+    seller_id = UnicodeAttribute()

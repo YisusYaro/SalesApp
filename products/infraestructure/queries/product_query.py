@@ -43,6 +43,7 @@ class ProductQuery(object, metaclass=Singleton):
                     name=model.name,
                     price=model.price,
                     category=model.category,
+                    seller_id=model.seller_id,
                     ),
             )
         return products

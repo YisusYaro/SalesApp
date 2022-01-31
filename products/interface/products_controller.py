@@ -23,7 +23,10 @@ def create_product(event, context):
     """
     body = json.loads(event['body'])
     CreateProductHandler().execute(
-        name=body['name'], price=body['price'], category=body['category'],
+        name=body['name'],
+        price=body['price'],
+        category=body['category'],
+        seller_id=body['seller_id'],
     )
     return VoidResponse.respond()
 

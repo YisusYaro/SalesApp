@@ -19,19 +19,21 @@ class CreateProductHandler(object, metaclass=Singleton):
         self.productRepository = ProductRepository()
         self.productFactory = ProductFactory()
 
-    def execute(self, name, price, category):
-        """Create a new Product .
+    def execute(self, name, price, category, seller_id):
+        """AI is creating summary for execute
 
         Args:
             name ([type]): [description]
             price ([type]): [description]
             category ([type]): [description]
+            seller_id ([type]): [description]
         """
         product = self.productFactory.create(
             _id=self.productRepository.get_id(),
             name=name,
             price=price,
             category=category,
-            )
+            seller_id=seller_id,
+        )
 
         self.productRepository.save(product)

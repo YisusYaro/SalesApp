@@ -12,23 +12,30 @@ class ProductFactory(object, metaclass=Singleton):
         metaclass ([type], optional): [description]. Defaults to Singleton.
     """
 
-    def create(self, _id, name, price, category):
-        """Create a Product .
+    def create(self, _id, name, price, category, seller_id):
+        """Create a Product
 
         Args:
             _id ([type]): [description]
             name ([type]): [description]
             price ([type]): [description]
             category ([type]): [description]
+            seller_id ([type]): [description]
 
         Returns:
             [type]: [description]
         """
         return Product(
-            {'id': _id, 'name': name, 'price': price, 'category': category},
+            {
+                'id': _id,
+                'name': name,
+                'price': price,
+                'category': category,
+                'seller_id': seller_id,
+            },
             )
 
-    def reconstitute(self, _id, name, price, category):
+    def reconstitute(self, _id, name, price, category, seller_id):
         """Reconstruct a Product .
 
         Args:
@@ -36,10 +43,17 @@ class ProductFactory(object, metaclass=Singleton):
             name ([type]): [description]
             price ([type]): [description]
             category ([type]): [description]
+            seller_id ([type]): [description]
 
         Returns:
             [type]: [description]
         """
         return Product(
-            {'id': _id, 'name': name, 'price': price, 'category': category},
-            )
+            {
+                'id': _id,
+                'name': name,
+                'price': price,
+                'category': category,
+                'seller_id': seller_id,
+            },
+        )

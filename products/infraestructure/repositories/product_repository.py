@@ -42,6 +42,7 @@ class ProductRepository(object, metaclass=Singleton):
             name=product.name,
             price=product.price,
             category=product.category,
+            seller_id=product.seller_id,
             )
         model.save()
 
@@ -75,4 +76,5 @@ class ProductRepository(object, metaclass=Singleton):
             name=model.name,
             price=model.price,
             category=model.category,
+            seller_id=model.seller_id,
             )
