@@ -4,9 +4,9 @@ import json
 
 from sellers.application.list_sellers_handler import ListSellersHandler
 from sellers.application.register_seller_handler import RegisterSellerHandler
-from shared.interface.items_response import ItemsResponse
 from shared.exceptions.bad_request import BadRequestException
 from shared.interface.bad_request_response import BadRequestResponse
+from shared.interface.items_response import ItemsResponse
 from shared.interface.void_response import VoidResponse
 
 
