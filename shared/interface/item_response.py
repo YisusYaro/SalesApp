@@ -22,6 +22,6 @@ class ItemResponse(object):
         return {
             'statusCode': 200,
             'body': json.dumps({
-                'item': response_item,
+                'item': json.loads(json.dumps(response_item.__dict__)),
             }),
         }
