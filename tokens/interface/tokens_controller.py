@@ -2,6 +2,8 @@
 
 import json
 
+from shared.interface.bad_request_response import BadRequestResponse
+from shared.interface.item_response import ItemResponse
 from tokens.aplication.login_handler import LoginHandler
 from tokens.infraestructure.unauthorized_exception import UnauthorizedException
 
@@ -19,9 +21,10 @@ def login(event, context):
     body = json.loads(event['body'])
 
     try:
-        return LoginHandler().execute(
-            email=body['email'],
-            password=body['password'],
-            )
+        return ItemResponse.respond(
+            LoginHandler().execute(
+                email=body['email'],
+                password=body['password'],
+                ))
     except UnauthorizedException:
-        return {'statusCode': 400}
+        return BadRequestResponse.respond()

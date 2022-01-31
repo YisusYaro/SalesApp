@@ -1,7 +1,5 @@
 """Authentication handler for the login process ."""
 
-import json
-
 from shared.infraestructure.data_structures.singleton import Singleton
 from tokens.infraestructure.token_service import TokenService
 
@@ -28,9 +26,4 @@ class LoginHandler(object, metaclass=Singleton):
         Returns:
             [type]: [description]
         """
-        auth = self.tokenService.auth(email=email, password=password)
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(auth),
-        }
+        return self.tokenService.auth(email=email, password=password)
