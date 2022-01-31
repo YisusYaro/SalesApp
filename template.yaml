@@ -65,6 +65,24 @@ Resources:
             Path: /sellers
             Method: post
 
+  GetSellerProfileFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ 
+      Handler: sellers/interface/sellers_controller.get_seller_profile
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
+      Architectures:
+        - x86_64
+      Events:
+        GetSellerProfile:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /sellers/{id}
+            Method: get
+
   ListSellersFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -118,7 +136,6 @@ Resources:
           Properties:
             Path: /clients/{id}
             Method: get
- 
 
   CreateProductFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -173,6 +190,42 @@ Resources:
           Properties:
             Path: /products/{id}
             Method: put
+
+  GeneratePurchaseFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ 
+      Handler: purchases/interface/purchases_controller.generate_purchase
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
+      Architectures:
+        - x86_64
+      Events:
+        GeneratePurchase:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /purchases
+            Method: post
+
+  ListClientPurchasesFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ 
+      Handler: purchases/interface/purchases_controller.get_client_purchases_list
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
+      Architectures:
+        - x86_64
+      Events:
+        ListClientPurchases:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /purchases/{id}
+            Method: get
 
   SalesAppTable:
     Type: AWS::DynamoDB::Table
