@@ -25,3 +25,4 @@ class SellerModel(Model):
     pk = UnicodeAttribute(hash_key=True)
     sk = UnicodeAttribute(range_key=True)
     name = UnicodeAttribute()
+    email = UnicodeAttribute

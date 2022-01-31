@@ -5,6 +5,7 @@ from sellers.infraestructure.repositories.seller_repository import \
     SellerRepository
 from shared.infraestructure.data_structures.singleton import Singleton
 from tokens.infraestructure.token_service import TokenService
+from tokens.infraestructure.user_exist_exception import UserExistException
 
 
 class RegisterSellerHandler(object, metaclass=Singleton):
@@ -32,16 +33,19 @@ class RegisterSellerHandler(object, metaclass=Singleton):
         Returns:
             [type]: [description]
         """
-        seller = self.sellerRepository.find_by_email(email)
-
-        if (seller):
-            return
-
         seller = self.sellerFactory.create(
             _id=self.sellerRepository.get_id(), name=name, email=email,
-            )
+        )
 
-        self.tokenService.sign_up(email=seller.email, password=password)
+        try:
+            self.tokenService.sign_up(
+                _id=seller.id,
+                email=seller.email,
+                password=password,
+            )
+        except UserExistException:
+            return
+
         self.tokenService.add_to_group(email=seller.email, group='sellers')
 
         self.sellerRepository.save(seller)
