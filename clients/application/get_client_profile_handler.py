@@ -32,7 +32,6 @@ class GetClientProfileHandler(object, metaclass=Singleton):
             [type]: [description]
         """
         profile = self.clientRepository.find_by_id(_id)
-        print(profile.id)
 
         if (not profile):
             raise BadRequestException()
