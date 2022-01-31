@@ -44,5 +44,3 @@ class RegisterClientHandler(object, metaclass=Singleton):
         self.tokenService.add_to_group(email=client.email, group='clients')
 
         self.clientRepository.save(client)
-
-        return {'statusCode': 200}
