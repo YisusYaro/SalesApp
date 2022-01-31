@@ -1,5 +1,6 @@
 """Script seller repository ."""
 
+from pynamodb.exceptions import DoesNotExist
 from ulid import ULID
 
 from sellers.domain.seller_factory import SellerFactory
@@ -33,14 +34,29 @@ class SellerRepository(object, metaclass=Singleton):
         Args:
             seller ([type]): [description]
         """
-        pk = 'sellers'
-        sk = '{email}#{id}'.format(email=seller.email, id=seller.id)
         model = SellerModel(
-            pk=pk,
-            sk=sk,
+            pk='sellers',
+            sk=seller.id,
             name=seller.name,
+            email=seller.email,
             )
         model.save()
+
+    def find_by_id(self, _id):
+        """Find a client by id .
+
+        Args:
+            _id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        model = None
+        try:
+            model = SellerModel.get(hash_key='sellers', range_key=_id)
+        except DoesNotExist:
+            return False
+        return self.model_to_seller(model)
 
     def find_by_email(self, email):
         """Find a seller by email address .
@@ -69,7 +85,6 @@ class SellerRepository(object, metaclass=Singleton):
         Returns:
             [type]: [description]
         """
-        sk = model.sk.split('#')
         return self.sellerFactory.reconstitute(
-            _id=sk[0], name=model.name, email=sk[1],
+            _id=model.sk, name=model.name, email=model.email,
             )

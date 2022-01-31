@@ -37,10 +37,9 @@ class SellerQuery(object, metaclass=Singleton):
         """
         sellers = []
         for model in models:
-            sk = model.sk.split('#')
             sellers.append(
                 self.sellerFactory.reconstitute(
-                    _id=sk[1], name=model.name, email=sk[0],
+                    _id=model.sk, name=model.name, email=model.email,
                     ),
                 )
         return sellers
