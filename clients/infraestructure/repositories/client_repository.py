@@ -1,5 +1,6 @@
 """Create a client repository for a given model ."""
 
+from pynamodb.exceptions import DoesNotExist
 from ulid import ULID
 
 from clients.domain.client_factory import ClientFactory
@@ -33,9 +34,29 @@ class ClientRepository(object, metaclass=Singleton):
             client ([type]): [description]
         """
         pk = 'clients'
-        sk = '{email}#{id}'.format(email=client.email, id=client.id)
-        model = ClientModel(pk=pk, sk=sk, name=client.name)
+        model = ClientModel(
+            pk=pk,
+            sk=client.id,
+            name=client.name,
+            email=client.email,
+        )
         model.save()
+
+    def find_by_id(self, _id):
+        """Find a client by id .
+
+        Args:
+            _id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        model = None
+        try:
+            model = ClientModel.get(hash_key='clients', range_key=_id)
+        except DoesNotExist:
+            return False
+        return self.model_to_client(model)
 
     def find_by_email(self, email):
         """Find client by email address .
@@ -64,7 +85,6 @@ class ClientRepository(object, metaclass=Singleton):
         Returns:
             [type]: [description]
         """
-        sk = model.sk.split('#')
         return self.clientFactory.reconstitute(
-            _id=sk[0], name=model.name, email=sk[1],
+            _id=model.sk, name=model.name, email=model.email,
         )
