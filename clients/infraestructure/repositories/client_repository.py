@@ -33,9 +33,8 @@ class ClientRepository(object, metaclass=Singleton):
         Args:
             client ([type]): [description]
         """
-        pk = 'clients'
         model = ClientModel(
-            pk=pk,
+            pk='clients',
             sk=client.id,
             name=client.name,
             email=client.email,
