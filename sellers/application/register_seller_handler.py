@@ -35,15 +35,13 @@ class RegisterSellerHandler(object, metaclass=Singleton):
         seller = self.sellerRepository.find_by_email(email)
 
         if (seller):
-            return {'statusCode': 200}
+            return
 
         seller = self.sellerFactory.create(
             _id=self.sellerRepository.get_id(), name=name, email=email,
             )
-        
+
         self.tokenService.sign_up(email=seller.email, password=password)
         self.tokenService.add_to_group(email=seller.email, group='sellers')
 
         self.sellerRepository.save(seller)
-
-        return {'statusCode': 200}
