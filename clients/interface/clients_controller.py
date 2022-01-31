@@ -36,7 +36,7 @@ def get_client_profile(event, context):
     object_id = event['pathParameters']['id']
     try:
         return ItemResponse.respond(
-            GetClientProfileHandler().execute(object_id)
+            GetClientProfileHandler().execute(object_id),
             )
     except BadRequestException:
-        return BadRequestResponse.respond
+        return BadRequestResponse.respond()
