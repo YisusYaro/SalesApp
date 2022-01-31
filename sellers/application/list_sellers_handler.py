@@ -1,7 +1,5 @@
 """Handler for list of seller objects ."""
 
-import json
-
 from sellers.infraestructure.queries.seller_query import SellerQuery
 from shared.infraestructure.data_structures.singleton import Singleton
 
@@ -15,19 +13,13 @@ class ListSellersHandler(object, metaclass=Singleton):
     """
 
     def __init__(self):
+        """Initialize the query object ."""
         self.sellerQuery = SellerQuery()
 
     def execute(self):
-        """List all seller objects .
+        """Execute all seller queries .
 
         Returns:
             [type]: [description]
         """
-        sellers = self.sellerQuery.find()
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(
-                sellers, default=lambda seller: seller.__dict__,
-            ),
-        }
+        return self.sellerQuery.find()

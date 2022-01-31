@@ -4,6 +4,7 @@ import json
 
 from sellers.application.list_sellers_handler import ListSellersHandler
 from sellers.application.register_seller_handler import RegisterSellerHandler
+from shared.interface.items_response import ItemsResponse
 
 
 def register_seller(event, context):
@@ -34,4 +35,4 @@ def list_sellers(event, context):
     Returns:
         [type]: [description]
     """
-    return ListSellersHandler().execute()
+    return ItemsResponse.respond(ListSellersHandler().execute())
