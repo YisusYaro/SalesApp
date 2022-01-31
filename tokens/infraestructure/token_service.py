@@ -6,7 +6,10 @@ import boto3
 
 from shared.exceptions.bad_request import BadRequestException
 from shared.infraestructure.data_structures.singleton import Singleton
+from tokens.domain.authentication_result_factory import \
+    AuthenticationResultFactory
 from tokens.infraestructure.unauthorized_exception import UnauthorizedException
+from tokens.infraestructure.user_exist_exception import UserExistException
 
 
 class TokenService(object, metaclass=Singleton):
@@ -18,13 +21,16 @@ class TokenService(object, metaclass=Singleton):
 
     def __init__(self):
         """Initialize the cognito - idp client ."""
+
+        self.authenticationResultFactory = AuthenticationResultFactory()
+
         self.client = boto3.client(
             'cognito-idp',
             region_name=os.environ.get('REGION'),
         )
         self.client_id = os.environ.get('COGNITO')
 
-    def sign_up(self, email, password):
+    def sign_up(self, _id, email, password):
         """Signs up a user with the given email address .
 
         Args:
@@ -39,12 +45,20 @@ class TokenService(object, metaclass=Singleton):
                 ClientId=self.client_id,
                 Username=email,
                 Password=password,
+                UserAttributes=[
+                    {
+                        'Name': 'custom:identifier',
+                        'Value': _id,
+                    },
+                ],
             )
         except (
             self.client.exceptions.InvalidPasswordException,
             self.client.exceptions.InvalidParameterException,
         ):
             raise BadRequestException()
+        except self.client.exceptions.UsernameExistsException:
+            raise UserExistException()
 
     def add_to_group(self, email, group):
         """Add a user to a group .
@@ -84,4 +98,22 @@ class TokenService(object, metaclass=Singleton):
         except self.client.exceptions.NotAuthorizedException:
             raise UnauthorizedException()
 
-        return auth.get('AuthenticationResult')
+        return self.cognito_result_to_authentication_result(
+            auth.get('AuthenticationResult'),
+            )
+
+    def cognito_result_to_authentication_result(self, cognito_result):
+        """Convert a cognito result to a cognito authentication result .
+
+        Args:
+            cognito_result ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        return self.authenticationResultFactory.reconstitute({
+            'AccessToken': cognito_result.get('AccessToken'),
+            'ExpiresIn': cognito_result.get('ExpiresIn'),
+            'TokenType': cognito_result.get('TokenType'),
+            'RefreshToken': cognito_result.get('RefreshToken'),
+        })
