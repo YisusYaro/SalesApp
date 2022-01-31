@@ -100,7 +100,26 @@ Resources:
           Properties:
             Path: /clients
             Method: post
-  
+
+  GetClientProfileFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ 
+      Handler: clients/interface/clients_controller.get_client_profile
+      Runtime: python3.8
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SalesAppTable
+      Architectures:
+        - x86_64
+      Events:
+        GetClientProfile:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /clients/{id}
+            Method: get
+ 
+
   CreateProductFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
