@@ -1,0 +1,13 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "SalesAppStack"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1qm7xueht2e75"
+s3_prefix = "SalesAppStack"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "Table=\"SalesApp\" Cognito=\"1g1qqa4ci8c19bc70rsfvnl8g\" Region=\"us-east-1\""
+image_repositories = []

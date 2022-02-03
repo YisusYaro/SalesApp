@@ -28,6 +28,51 @@ Parameters:
 
 Resources:
 
+  AdminAddUserToGroupRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'AdminAddUserToGroupPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminAddUserToGroup
+                Resource:
+                  - "*"
+  
+  SellersApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
+        DefaultAuthorizer: MyLambdaTokenAuthorizer
+        Authorizers: 
+          MyLambdaTokenAuthorizer:
+            FunctionArn: !GetAtt SellerAuthFunction.Arn
+
+  SellerAuthFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./
+      Handler: authorizers.authorizers.seller_authorizer
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+
   LoginFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -46,13 +91,13 @@ Resources:
             Path: /login
             Method: post
 
-
   RegisterSellerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
       Handler: sellers/interface/sellers_controller.register_seller
       Runtime: python3.8
+      Role: !GetAtt AdminAddUserToGroupRole.Arn
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SalesAppTable
@@ -79,6 +124,7 @@ Resources:
       Events:
         GetSellerProfile:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          RestApiId: !Ref SellersApi
           Properties:
             Path: /sellers/{id}
             Method: get
@@ -107,9 +153,10 @@ Resources:
       CodeUri: ./ 
       Handler: clients/interface/clients_controller.register_client
       Runtime: python3.8
+      Role: !GetAtt AdminAddUserToGroupRole.Arn
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref SalesAppTable
+            TableName: !Ref 
       Architectures:
         - x86_64
       Events:
@@ -253,6 +300,6 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  SalesAppApi:
+  SellersApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

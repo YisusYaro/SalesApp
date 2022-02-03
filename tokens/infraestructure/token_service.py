@@ -116,4 +116,5 @@ class TokenService(object, metaclass=Singleton):
             'ExpiresIn': cognito_result.get('ExpiresIn'),
             'TokenType': cognito_result.get('TokenType'),
             'RefreshToken': cognito_result.get('RefreshToken'),
+            'IdToken': cognito_result.get('IdToken'),
         })
