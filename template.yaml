@@ -14,6 +14,14 @@ Globals:
         TABLE: !Ref Table
         COGNITO: !Ref Cognito
         REGION: !Ref Region
+  Api:
+    Auth:
+      Authorizers:
+        SellerIdentifierAuthorizer:
+          FunctionPayloadType: TOKEN # OPTIONAL; Defaults to 'TOKEN' when `FunctionArn` is specified
+          FunctionArn: !GetAtt SellerIdentifierAuthorizer.Arn
+          Identity:
+            ReauthorizeEvery: 0 # OPTIONAL; Service Default: 300
 
 Parameters:
   Table:
@@ -27,6 +35,41 @@ Parameters:
     Default: us-east-1
 
 Resources:
+
+  AdminAddUserToGroupRole:
+      Type: AWS::IAM::Role
+      Properties:
+        ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+          - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - 'lambda.amazonaws.com'
+              Action:
+                - 'sts:AssumeRole'
+        Policies:
+          - PolicyName: 'AdminAddUserToGroupPolicy'
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - cognito-idp:AdminAddUserToGroup
+                  Resource:
+                    - "*"
+  
+  SellerIdentifierAuthorizer:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./
+      Handler: tokens.interface.tokens.controller
+      Runtime: python3.8
+      Architectures:
+        - x86_64
 
   LoginFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -46,13 +89,13 @@ Resources:
             Path: /login
             Method: post
 
-
   RegisterSellerFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./ 
       Handler: sellers/interface/sellers_controller.register_seller
       Runtime: python3.8
+      Role: !GetAtt AdminAddUserToGroupRole.Arn
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SalesAppTable
@@ -82,6 +125,8 @@ Resources:
           Properties:
             Path: /sellers/{id}
             Method: get
+            Auth:
+              Authorizer: SellerIdentifierAuthorizer
 
   ListSellersFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -107,6 +152,7 @@ Resources:
       CodeUri: ./ 
       Handler: clients/interface/clients_controller.register_client
       Runtime: python3.8
+      Role: !GetAtt AdminAddUserToGroupRole.Arn
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref SalesAppTable
