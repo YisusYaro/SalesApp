@@ -1,6 +1,6 @@
 # SalesApp
 
-Sam application using driven domain design
+Sam application using driven domain design and cqrs.
 
 ### Build 🔧
 
